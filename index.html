@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LittleJS Game</title>
+</head>
+<body>
+    <canvas id="gameCanvas" width="640" height="480"></canvas>
+    
+    <script src="https://cdn.jsdelivr.net/npm/littlejsengine@1.1.1/little.min.js"></script>
+    
+    <script>
+        let player = { x: 100, y: 100, w: 32, h: 32 };
+        let coins = [];
+
+        function update() {
+            if (little.keyDown('ArrowRight')) player.x += 5;
+            if (little.keyDown('ArrowLeft')) player.x -= 5;
+            if (little.keyDown('ArrowDown')) player.y += 5;
+            if (little.keyDown('ArrowUp')) player.y -= 5;
+
+            // Collision detection with coins
+            for (let i = 0; i < coins.length; i++) {
+                if (little.rectCollision(player, coins[i])) {
+                    coins.splice(i, 1); // Remove coin
+                    i--; // Adjust index after removing element
+                }
+            }
+        }
+
+        function draw() {
+            little.cls();
+
+            // Draw player
+            little.rect(player.x, player.y, player.w, player.h, 12);
+
+            // Draw coins
+            for (let coin of coins) {
+                little.rect(coin.x, coin.y, coin.w, coin.h, 14);
+            }
+        }
+
+        function generateCoin() {
+            // Generate random position for coin
+            let x = Math.random() * (little.canvas.width - 32);
+            let y = Math.random() * (little.canvas.height - 32);
+            coins.push({ x: x, y: y, w: 16, h: 16 });
+        }
+
+        // Generate initial coins
+        for (let i = 0; i < 10; i++) {
+            generateCoin();
+        }
+
+        // Generate new coin every 2 seconds
+        setInterval(generateCoin, 2000);
+
+        little.start();
+    </script>
+</body>
+</html>
